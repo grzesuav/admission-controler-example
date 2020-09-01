@@ -1,0 +1,1 @@
+# Example of  kubernetes addmission controller
