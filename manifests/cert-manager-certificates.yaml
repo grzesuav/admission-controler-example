@@ -1,0 +1,48 @@
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Issuer
+metadata:
+  name: ca-issuer
+  namespace: admission-example
+spec:
+  selfSigned: {}
+
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: validation-ca
+  namespace: admission-example
+spec:
+  secretName: cert-ca
+  commonName: "cert-ca"
+  isCA: true
+  issuerRef:
+    name: ca-issuer
+
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Issuer
+metadata:
+  name: issuer
+  namespace: admission-example
+spec:
+  ca:
+    secretName: cert-ca
+
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: validation-cert
+  namespace: admission-example
+spec:
+  secretName: validation-cert
+  duration: 8760h # one year
+  issuerRef:
+    name:  issuer
+  dnsNames:
+    - admission
+    - admission.admission-example
+    - admission.admission-example.svc
+    - admission.admission-example.svc.cluster.local

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admission
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admission
+  template:
+    metadata:
+      labels:
+        app: admission
+    spec:
+      volumes:
+      - name: certs
+        secret:
+          secretName: validation-cert
+          optional: false
+      containers:
+      - name: admission
+        image: admission:test
+        ports:
+        - containerPort: 4443
+          name: https
+        volumeMounts:
+          - mountPath: /certs
+            name: certs 
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admission
+spec:
+  type: ClusterIP
+  selector:
+    app: admission
+  ports:
+  - port: 443
+    targetPort: https
+    name: https
+
