@@ -1,0 +1,21 @@
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: admission
+  annotations:
+    certmanager.k8s.io/inject-ca-from: "admission-example/validation-cert"
+webhooks:
+- name: admission.example.org
+  clientConfig:
+    service:
+      name: admission
+      namespace: admission-example
+      path: "/validate"
+  rules:
+  - operations: ["CREATE"]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["namespaces"]
+  failurePolicy: Fail
+
